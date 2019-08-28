@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 //======================
 // CONNECTION TO DATA BASE
 //======================
-mongoose.connect('mongodb+srv://<password>:<password>@cluster0-jqh2a.mongodb.net/EmployeeDB?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://pgmarcosoliveira:KGZ5vhRVN!ZAiW!@cluster0-jqh2a.mongodb.net/EmployeeDB?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useCreateIndex: true
 }).then(() => {
