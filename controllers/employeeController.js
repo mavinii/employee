@@ -10,8 +10,11 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-    insertRecord(req, res);
-});
+    if (req.body._id == '')   
+        insertRecord(req, res);
+        else
+        updateRecord(req, res);
+});     
 
 // SAVE all information to database
 function insertRecord(req, res) {
@@ -37,9 +40,35 @@ function insertRecord(req, res) {
     });
 }
 
+// UPDATE function
+function updateRecord(req, res){
+    Employee.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true }, (err, doc) => {
+        if (!err) { res.redirect('employee/list'); }
+        else {
+            if (err.name == 'ValidationError'){
+                handleValidationError(err, req.body);
+                res.render("employee/addOrEdit", {
+                    viewTitle: 'Update Employee',
+                    employee: req.body
+                });
+            }
+            else 
+            console.log("Error duraing record update: " + err);
+        }
+    });
+}
+
 // REDIRECT the page list when add to database
 router.get('/list', function(req, res){
-    res.json("From List");
+    Employee.find((err, docs) => {
+        if (!err) {
+            res.render("employee/list", {
+                list: docs
+            });
+        } else {
+            console.log("Error in retrieving employee list :" + err);
+        }        
+    });
 });
 
 // VALIDADOR de campos name/email
@@ -57,5 +86,27 @@ function handleValidationError(err, body) {
         }
     }
 }
+
+router.get('/:id', (req, res) => {
+    Employee.findById(req.params.id, (err, doc) => {
+        if (!err) { 
+            res.render("employee/addOrEdit", {
+                viewTitle: "Update Employee",
+                employee: doc
+            });
+        }
+    });
+});
+
+// REMOVE remove the iten of the list
+router.get('/delete/:id', (req, res) => {
+    Employee.findByIdAndRemove(req.params.id, (err, doc) => {
+        if (!err) {
+            res.redirect("/employee/list");
+        } else {
+            console.log('Error in employee delete :' + err);
+        }
+    });
+});
 
 module.exports = router; 
